@@ -24,7 +24,7 @@ app.post('/posts/:id/comments', async (req, res) => {
   commentsByPostsId[req.params.id] = comments;
 
   await axios
-    .post('http://localhost:4005/events', {
+    .post('http://event-bus-service:4005/events', {
       type: 'CommentCreated',
       data: {
         id: commentId,
@@ -44,10 +44,6 @@ app.post('/events', async (req, res) => {
 
   if (type === 'CommentModerated') {
     const { postId, id, status, content } = data;
-    console.log('postId', postId);
-    console.log('id', id);
-    console.log('status', status);
-    console.log('content', content);
     const comments = commentsByPostsId[postId];
 
     const comment = comments?.find((comment) => {
@@ -55,9 +51,8 @@ app.post('/events', async (req, res) => {
     });
 
     comment.status = status;
-    console.log('comment', comment);
 
-    await axios.post('http://localhost:4005/events', {
+    await axios.post('http://event-bus-service:4005/events', {
       type: 'CommentUpdated',
       data: {
         id,
